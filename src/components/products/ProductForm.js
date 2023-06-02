@@ -10,8 +10,8 @@ export const ProductForm = () => {
     */
     const [product, update] = useState({
         name: "",
-        productTypeId: "",
-        price: ""
+        productTypeId: 0,
+        ppu: 0
     })
     /*
         TODO: Use the useNavigation() hook so you can redirect
@@ -36,23 +36,24 @@ export const ProductForm = () => {
         */
         const productToSendToAPI = {
             name: product.name,
-            productTypeId: +product.productTypeId,
-            price: +product.price
+            productTypeId: product.productTypeId,
+            ppu: product.ppu
         }
 
         // TODO: Perform the fetch() to POST the object to the API
-        //if (product.name !== "" && product.price > 0 && product.type !== 0) {}
-        return fetch(`http://localhost:8088/products`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(productToSendToAPI)
-        })
-            .then(response => response.json())
-            .then(() => {
-                navigate("/products")
+        if (product.name !== "" && product.ppu > 0 && product.productTypeId !== 0) {
+            return fetch(`http://localhost:8088/products`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(productToSendToAPI)
             })
+                .then(response => response.json())
+                .then(() => {
+                    navigate("/products")
+                })
+        }
     }
 
     useEffect(
@@ -65,6 +66,8 @@ export const ProductForm = () => {
         },
         []
     )
+
+
 
     //RETURN THE FORM HERE LIKE IN TICKETFORM
     return (
@@ -103,7 +106,7 @@ export const ProductForm = () => {
                                 update(copy)
                             }
                         }>
-                        <option value="0" selected>Select Candy Type</option>
+                        <option value="" defaultValue>Select Candy Type</option>
                         {productTypes.map(item => (
                             <option value={item.id} key={item.id}>{item.name}</option>
                         ))}
@@ -118,11 +121,11 @@ export const ProductForm = () => {
                         type="text"
                         className="form-control"
                         placeholder="Enter the price without a dollar sign"
-                        value={product.price}
+                        value={product.ppu}
                         onChange={
                             (evt) => {
                                 const copy = { ...product }
-                                copy.price = evt.target.value
+                                copy.ppu = evt.target.value
                                 update(copy)
                             }
                         } />
